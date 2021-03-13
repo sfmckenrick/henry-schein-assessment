@@ -137,7 +137,11 @@ public class Person {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person that = (Person) o;
-        return getId().equals(that.getId()) && getFirstName().equals(that.getFirstName()) && Objects.equals(getMiddleName(), that.getMiddleName()) && getLastName().equals(that.getLastName()) && getDateOfBirth().equals(that.getDateOfBirth());
+        return getId().equals(that.getId())
+                && getFirstName().equals(that.getFirstName())
+                && Objects.equals(getMiddleName(), that.getMiddleName())
+                && getLastName().equals(that.getLastName())
+                && getDateOfBirth().equals(that.getDateOfBirth());
     }
 
     @Override
