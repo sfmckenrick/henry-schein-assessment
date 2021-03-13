@@ -1,5 +1,8 @@
 package com.sfmckenrick.assessment.personManagement;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -45,6 +48,7 @@ public class Address {
      */
     @ManyToOne
     @JoinColumn(name = "person_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Person person;
 
     /**

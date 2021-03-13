@@ -51,11 +51,13 @@ public class Person {
     /**
      * Constructor.
      * @param firstName - First name of the person.
+     * @param middleName - Middle name of the person.
      * @param lastName - Last name of the person.
      * @param dateOfBirth - DoB of the person.
      */
-    public Person(String firstName, String lastName, Date dateOfBirth) {
+    public Person(String firstName, String middleName, String lastName, Date dateOfBirth) {
         this.firstName = firstName;
+        this.middleName = middleName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
     }
