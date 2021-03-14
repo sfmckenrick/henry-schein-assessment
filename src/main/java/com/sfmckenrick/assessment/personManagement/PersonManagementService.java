@@ -61,7 +61,7 @@ public class PersonManagementService {
      * @param id - The ID of the person.
      * @return A Person with matching ID.
      */
-    public Person getPersonById(Long id) {
+    public Person getPersonById(long id) {
         return personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
     }
 
@@ -81,7 +81,11 @@ public class PersonManagementService {
      */
     @Transactional
     public void deletePersonById(long id) {
-        personRepository.deleteById(id);
+        if(personRepository.existsById(id)) {
+            personRepository.deleteById(id);
+        } else {
+            throw new PersonNotFoundException(id);
+        }
     }
 
     /**
@@ -100,7 +104,11 @@ public class PersonManagementService {
      * @return The List of Address objects.
      */
     public List<Address> getAddressByPersonId(long id) {
-        return addressRepository.findByPersonId(id);
+        if(personRepository.existsById(id)) {
+            return addressRepository.findByPersonId(id);
+        } else {
+            throw new PersonNotFoundException(id);
+        }
     }
 
     /**
@@ -118,7 +126,11 @@ public class PersonManagementService {
      */
     @Transactional
     public void deleteAllAddressForPersonById(long id) {
-        addressRepository.deleteAddressByPersonId(id);
+        if(personRepository.existsById(id)) {
+            addressRepository.deleteAddressByPersonId(id);
+        } else {
+            throw new PersonNotFoundException(id);
+        }
     }
 
     /**
@@ -127,7 +139,11 @@ public class PersonManagementService {
      */
     @Transactional
     public void deleteAddressById(long id) {
-        addressRepository.deleteById(id);
+        if(addressRepository.existsById(id)) {
+            addressRepository.deleteById(id);
+        } else {
+            throw new AddressNotFoundException(id);
+        }
     }
 
     /**
@@ -146,7 +162,11 @@ public class PersonManagementService {
      */
     @Transactional
     public void deleteClubByName(String name) {
-        clubRepository.deleteById(name);
+        if(clubRepository.existsById(name)) {
+            clubRepository.deleteById(name);
+        } else {
+            throw new ClubNotFoundException(name);
+        }
     }
 
     /**
@@ -155,7 +175,7 @@ public class PersonManagementService {
      * @return A Club object with a matching name.
      */
     public Club getClubByName(String name) {
-        return clubRepository.findById(name).orElseThrow(() ->new ClubNotFoundException(name));
+        return clubRepository.findById(name).orElseThrow(() -> new ClubNotFoundException(name));
     }
 
     /**
@@ -178,6 +198,13 @@ public class PersonManagementService {
      */
     @Transactional
     public void deleteClubMembership(long personId, String clubName) {
+        if (!clubRepository.existsById(clubName)) {
+            throw new ClubNotFoundException(clubName);
+        }
+
+        if (!personRepository.existsById(personId)) {
+            throw new PersonNotFoundException(personId);
+        }
         clubMembershipRepository.deleteByIdPersonIdAndIdClubName(personId, clubName);
     }
 
@@ -188,6 +215,14 @@ public class PersonManagementService {
      * @return True if member, false if no relation.
      */
     public boolean isPersonClubMember(long personId, String clubName) {
+        if (!clubRepository.existsById(clubName)) {
+            throw new ClubNotFoundException(clubName);
+        }
+
+        if (!personRepository.existsById(personId)) {
+            throw new PersonNotFoundException(personId);
+        }
+
         return clubMembershipRepository.existsByIdPersonIdAndIdClubName(personId, clubName);
     }
 
@@ -197,6 +232,10 @@ public class PersonManagementService {
      */
     @Transactional
     public void deleteClubMembershipByPerson(long id) {
+        if (!personRepository.existsById(id)) {
+            throw new PersonNotFoundException(id);
+        }
+
         clubMembershipRepository.deleteByIdPersonId(id);
     }
 
@@ -207,6 +246,10 @@ public class PersonManagementService {
      */
     @Transactional
     public void deleteClubMembershipByClub(String name) {
+        if (!clubRepository.existsById(name)) {
+            throw new ClubNotFoundException(name);
+        }
+
         clubMembershipRepository.deleteByIdClubName(name);
     }
 
@@ -215,7 +258,11 @@ public class PersonManagementService {
      * @param id - The ID of the Person to Check.
      * @return A list of Clubs where the supplied Person is a member.
      */
-    public List<Club> getClubMembershipForPerson(Long id) {
+    public List<Club> getClubMembershipForPerson(long id) {
+        if (!personRepository.existsById(id)) {
+            throw new PersonNotFoundException(id);
+        }
+
         return clubMembershipRepository.findByIdPersonId(id)
                 .stream()
                 .map(ClubMembership::getClub)
@@ -228,6 +275,10 @@ public class PersonManagementService {
      * @return A list of Persons where they belong to a supplied Club.
      */
     public List<Person> getPersonMembersForClub(String name) {
+        if (!clubRepository.existsById(name)) {
+            throw new ClubNotFoundException(name);
+        }
+
         return clubMembershipRepository.findByIdClubName(name)
                 .stream()
                 .map(ClubMembership::getPerson)
