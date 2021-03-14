@@ -1,6 +1,7 @@
 package com.sfmckenrick.assessment.personManagement;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * The entity object that represents a club.
@@ -11,24 +12,30 @@ import javax.persistence.*;
 public class Club {
 
     /**
-     * Auto-generated identifier.
+     * The Name of the club.
      */
     @Id
-    @GeneratedValue
-    private Long id;
-
-    /**
-     * The street name and number of this Address.
-     */
-    @Column(unique = true, nullable = false)
+    @Column
     private String name;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Club club = (Club) o;
+        return getName().equals(club.getName()) && Objects.equals(getDescription(), club.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getDescription());
+    }
+
     /**
-     * The city name of this Address.
+     * The Description of this club.
      */
     @Column
     private String description;
-
 
     /**
      * Serialization Constructor.
@@ -43,13 +50,6 @@ public class Club {
     public Club(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-    /**
-     * ID Accessor.
-     * @return The primary key identifier.
-     */
-    public Long getId() {
-        return id;
     }
 
     /**
