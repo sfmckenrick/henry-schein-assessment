@@ -62,9 +62,11 @@ public class PersonManagementController {
      * Exception handler that handles DataIntegrityViolationException exceptions that are thrown.
      * This indicates that either the data was malformed or that there was a constrain violation.
      */
-    @ResponseStatus(value=HttpStatus.NOT_FOUND, reason="Data integrity violation")
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public void handleIntegrityViolation() {}
+    public ResponseEntity<Object> handleIntegrityViolation(DataIntegrityViolationException e, WebRequest request) {
+        String message = "Data integrity violation. Please check that the data is valid and not malformed.";
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
 
     /**
      * Exception handler that handles all implementations of EntityNotFoundException exceptions.
@@ -74,6 +76,6 @@ public class PersonManagementController {
      */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleNotFound(EntityNotFoundException e, WebRequest request) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.NOT_FOUND);
     }
 }
