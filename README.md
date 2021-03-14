@@ -17,14 +17,14 @@
 
 _/v1/post-person_
 
-Allows a person to be inserted into the H2 DB
+Allows a personalInfo to be inserted into the H2 DB
 
 Admin-only
 
 ### GET
-_/v1/get-person/{personId}_
+_/v1/get-personalInfo/{personId}_
 
-Allows one person to be selected based on ID.
+Allows one personalInfo to be selected based on ID.
 
 Only search on ID.
 
@@ -32,7 +32,7 @@ Path Variable.
 
 ### DELETE
 
-_/v1/delete-person/{personId}_
+_/v1/delete-personalInfo/{personId}_
 
 admin user only
 
@@ -41,13 +41,13 @@ Path Variable
 ## Database
 
 ### PersonalInfo
-Database representation of a person.
+Database representation of a personalInfo.
 
 ### Address
-1:Many relationship with PersonalInfo. One person can have many addresses.
+1:Many relationship with PersonalInfo. One personalInfo can have many addresses.
 
 ### Club
-Many:Many relationship with PersonalInfo. Each person can belong to many clubs and clubs contain multiple people.
+Many:Many relationship with PersonalInfo. Each personalInfo can belong to many clubs and clubs contain multiple people.
 
 ## Bonus
 
