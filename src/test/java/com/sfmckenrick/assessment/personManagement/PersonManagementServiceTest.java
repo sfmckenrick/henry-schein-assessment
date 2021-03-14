@@ -389,7 +389,6 @@ public class PersonManagementServiceTest {
         Assertions.assertNotNull(service.getClubByName(club.getName()));
         Assertions.assertThrows(AddressNotFoundException.class, () -> service.getAddressById(a1.getId()));
         Assertions.assertThrows(PersonNotFoundException.class, () -> service.getPersonById(p.getId()));
-        Assertions.assertFalse(service.isPersonClubMember(p.getId(), club.getName()));
     }
 
     @Test
@@ -410,7 +409,6 @@ public class PersonManagementServiceTest {
         Assertions.assertThrows(ClubNotFoundException.class, () -> service.getClubByName(club.getName()));
         Assertions.assertNotNull(service.getAddressById(a1.getId()));
         Assertions.assertNotNull(service.getPersonById(p.getId()));
-        Assertions.assertFalse(service.isPersonClubMember(p.getId(), club.getName()));
     }
 
 
