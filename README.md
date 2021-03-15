@@ -1,50 +1,52 @@
-Scott McKenrick
-REST
+# Scott McKenrick
+Take-home assessment for Sr. SW Engineer for Henry Schein
+
+## REST
 This Application contains 2 RESTful controllers.
 
-PersonManagement
-POST
-/v1/post-person
+### PersonManagement
+#### POST
+_/v1/post-person_
 
 Allows a person to be inserted into the H2 DB
 
 Permission: Write
 
-GET
-/v1/get-person/{personId}
+#### GET
+_/v1/get-person/{personId}_
 
 Allows one person to be selected based on ID.
 
 Permission: Read Write
 
-DELETE
-/v1/delete-person/{personId}
+#### DELETE
+_/v1/delete-person/{personId}_
 
 Deletes a person based on ID.
 
 Permission: Write
 
-Authentication
-POST
-/v1/auth/token
+### Authentication
+#### POST
+_/v1/auth/token_
 
 Request a token for a specific user.
 
 Role: User
 
-Endpoint Security
-JWT
+## Endpoint Security
+### JWT
 Only accessible for User Role
 
-Basic
+### Basic
 Only accessible for Admin Role
 
-Database
-PersonalInfo
+## Database
+### PersonalInfo
 Database representation of a person.
 
-Address
+### Address
 1:Many relationship with PersonalInfo. One person can have many addresses.
 
-Club
+### Club
 Many:Many relationship with PersonalInfo. Each person can belong to many clubs and clubs contain multiple people.
