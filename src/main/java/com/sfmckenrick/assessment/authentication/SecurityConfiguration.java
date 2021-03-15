@@ -27,12 +27,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         authMgrBuilder.inMemoryAuthentication()
                 // These credentials should ideally be pulled from a secret store.
                 .withUser("admin").password("{noop}password")
-                    .roles("ADMIN")
-                    .authorities("WRITE", "READ")
+                    .roles(Role.ADMIN)
+                    .authorities(Authority.READ, Authority.WRITE)
                 .and()
-                .withUser("user").password("{noop}password")
-                    .roles("USER")
-                    .authorities("READ");
+                .withUser("public").password("{noop}password")
+                .roles(Role.USER)
+                .authorities(Authority.READ);
     }
 
     /**
@@ -45,10 +45,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/v1/get-person/**").hasAnyAuthority("READ", "WRITE")
-                .antMatchers("/v1/delete-person/**", "/v1/post-person/**").hasAuthority("WRITE")
-                .anyRequest().denyAll()
+                    .antMatchers("/v1/get-person/**").hasAnyAuthority(Authority.READ, Authority.WRITE)
+                    .antMatchers("/v1/delete-person/**", "/v1/post-person/**").hasAuthority(Authority.WRITE)
+                    .anyRequest().denyAll()
                 .and()
-                .httpBasic();
+                .httpBasic()
+                .and()
+                .oauth2ResourceServer()
+                .jwt();
     }
 }
