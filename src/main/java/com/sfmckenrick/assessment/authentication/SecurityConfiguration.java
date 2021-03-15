@@ -10,7 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Web Security Configuration to enable basic auth and role based permissions.
@@ -20,16 +23,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    /**
-     * The Jwt Token utility.
-     */
     private final JwtUtil jwtUtil;
 
-    /**
-     * Configuration method that creates the in-memory users and roles.
-     * @param jwtUtil - The jwtUtil to initialize.
-     * @throws Exception - If an error occurs while setting users.
-     */
     @Autowired
     public SecurityConfiguration(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -42,6 +37,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
+
+    @Bean
     @Override
     public UserDetailsService userDetailsService() {
 
@@ -50,16 +50,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         //User Role
         UserDetails adminUser = User.withUsername("admin")
-                .password("{noop}password")
-                .roles(Role.ADMIN)
-                .authorities(Authority.READ, Authority.WRITE)
+                .password("password")
+                .authorities(Role.ADMIN, Authority.READ, Authority.WRITE)
                 .build();
 
         //Manager Role
         UserDetails publicUser = User.withUsername("public")
-                .password("{noop}password")
-                .roles(Role.USER)
-                .authorities(Authority.READ)
+                .password("password")
+                .authorities(Role.USER, Authority.READ)
                 .build();
 
 
@@ -71,6 +69,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return userDetailsManager;
     }
 
+    @Bean
+    public RestrictedBasicAuthenticationFilter restrictedBasicAuthenticationFilter() throws Exception {
+        return new RestrictedBasicAuthenticationFilter(authenticationManagerBean(),
+                userDetailsService(),
+                Role.ADMIN);
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil, userDetailsService());
+    }
+
     /**
      * Configures BasicAuth for all v1 endpoints.
      * @param http - The HttpSecurity to configure.
@@ -78,14 +88,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
+
+        // Configure Route access
+        http.csrf().disable()
                 .authorizeRequests()
                     .antMatchers("/v1/get-person/**").hasAnyAuthority(Authority.READ, Authority.WRITE)
                     .antMatchers("/v1/delete-person/**", "/v1/post-person/**").hasAuthority(Authority.WRITE)
-                    .antMatchers("/v1/auth/token/**").authenticated()
-                    .anyRequest().denyAll()
-                .and()
-                .httpBasic();
+                    .antMatchers("/v1/auth/token/**").permitAll()
+                    .anyRequest().denyAll();
+
+        // Add filters ADMIN - Basic Auth, User - JWT.
+        http
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilter(restrictedBasicAuthenticationFilter());
     }
 }
