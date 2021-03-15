@@ -1,56 +1,50 @@
-# Scott McKenrick
+Scott McKenrick
+REST
+This Application contains 2 RESTful controllers.
 
-## Spring Boot Application
-
-### Authentication
-
-* JWT
-
-    * public user
-    * Readonly
-
-* Basic Auth
-    * Read and Write
-    * Admin user
-
-### POST
-
-_/v1/post-person_
+PersonManagement
+POST
+/v1/post-person
 
 Allows a person to be inserted into the H2 DB
 
-Admin-only
+Permission: Write
 
-### GET
-_/v1/get-person/{personId}_
+GET
+/v1/get-person/{personId}
 
 Allows one person to be selected based on ID.
 
-Only search on ID.
+Permission: Read Write
 
-Path Variable.
+DELETE
+/v1/delete-person/{personId}
 
-### DELETE
+Deletes a person based on ID.
 
-_/v1/delete-person/{personId}_
+Permission: Write
 
-admin user only
+Authentication
+POST
+/v1/auth/token
 
-Path Variable
+Request a token for a specific user.
 
-## Database
+Role: User
 
-### PersonalInfo
+Endpoint Security
+JWT
+Only accessible for User Role
+
+Basic
+Only accessible for Admin Role
+
+Database
+PersonalInfo
 Database representation of a person.
 
-### Address
+Address
 1:Many relationship with PersonalInfo. One person can have many addresses.
 
-### Club
+Club
 Many:Many relationship with PersonalInfo. Each person can belong to many clubs and clubs contain multiple people.
-
-## Bonus
-
-### Swagger
-
-### Unit Tests
