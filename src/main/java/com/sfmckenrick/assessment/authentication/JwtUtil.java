@@ -5,16 +5,12 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Utility Class for creating and parsing JWT Tokens.
@@ -34,16 +30,19 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
+    /**
+     * The time that the token is valid. In millis.
+     */
     @Value("${jwt.valid.millis}")
     private Long tokenExpiryMillis;
 
     /**
-     * Attempts to parse a JWT. Returns an Optional-wrapped User representing the token's owner.
+     * Attempts to parse and validate a JWT. Returns an Optional-wrapped User representing the token's owner.
      *
      * @param token the JWT token to parse
      * @return The username of the requesting user.
      */
-    public Optional<User> parseToken(String token) {
+    public Optional<String> extractUsername(String token) {
         try {
             Claims body = Jwts.parser()
                     .setSigningKey(secret)
@@ -51,17 +50,14 @@ public class JwtUtil {
                     .getBody();
 
             String username = body.getSubject();
-            String password = "";
-            Collection<GrantedAuthority> authorities= Arrays.stream(body.get(AUTHORITIES_KEY).toString().split(","))
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
 
-            return Optional.of(new User(username, password, authorities));
+            return Optional.of(username);
 
         } catch (JwtException e) {
             return Optional.empty();
         }
     }
+
 
     /**
      * Generates a simple JWT with a Username subject and an Expiry time.

@@ -15,7 +15,10 @@ public class JwtResponse implements Serializable {
     /**
      * The token.
      */
-    private final String token;
+    private String token;
+
+    public JwtResponse() {
+    }
 
     public JwtResponse(String token) {
         this.token = token;
@@ -23,5 +26,9 @@ public class JwtResponse implements Serializable {
 
     public String getToken() {
         return this.token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
